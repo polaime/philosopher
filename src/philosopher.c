@@ -3,70 +3,86 @@
 void	*philosopher_life(void *info)
 {
 	t_philosopher	*philo;
-	int				died;
 
 	philo = (t_philosopher *)info;
-	while (1)
+	while (!is_simulation_over(philo))
 	{
-		pthread_mutex_lock(&philo->data->death_mutex);
-		died = philo->data->one_dead;
-		pthread_mutex_unlock(&philo->data->death_mutex);
-		if (died)
-			pthread_exit(NULL);
 		printf("Philosopher %d is thinking\n", philo->id);
 		pthread_mutex_lock(philo->left_fork);
-			pthread_mutex_lock(&philo->data->death_mutex);
-		died = philo->data->one_dead;
-		pthread_mutex_unlock(&philo->data->death_mutex);
-		if (died)
-			pthread_exit(NULL);
+		if (is_simulation_over(philo))
+		{
+			pthread_mutex_unlock(philo-> left_fork);
+			break ;
+		}
 		printf("Philosopher %d took the left fork\n", philo->id);
 		pthread_mutex_lock(philo->right_fork);
-			pthread_mutex_lock(&philo->data->death_mutex);
-		died = philo->data->one_dead;
-		pthread_mutex_unlock(&philo->data->death_mutex);
-		if (died)
-			pthread_exit(NULL);
+		if (is_simulation_over(philo))
+		{
+			pthread_mutex_unlock(philo-> right_fork);
+			pthread_mutex_unlock(philo-> left_fork);
+			break ;
+		}
 		printf("Philosopher %d took the right fork\n", philo->id);
 		pthread_mutex_lock(&philo->meals_mutex);
-			pthread_mutex_lock(&philo->data->death_mutex);
-		died = philo->data->one_dead;
-		pthread_mutex_unlock(&philo->data->death_mutex);
-		if (died)
-			pthread_exit(NULL);
-		philo->last_meal_time = get_time_in_ms();
-		printf("Philosopher %d is eating\n", philo->id);
-		usleep(philo->data->time_to_eat * 1000);
-		philo->meals_eaten++;
-		pthread_mutex_unlock(philo->right_fork);
-			pthread_mutex_lock(&philo->data->death_mutex);
-		died = philo->data->one_dead;
-		pthread_mutex_unlock(&philo->data->death_mutex);
-		if (died)
-			pthread_exit(NULL);
-		pthread_mutex_unlock(philo->left_fork);
-			pthread_mutex_lock(&philo->data->death_mutex);
-		died = philo->data->one_dead;
-		pthread_mutex_unlock(&philo->data->death_mutex);
-		if (died)
-			pthread_exit(NULL);
-		pthread_mutex_unlock(&philo->meals_mutex);
-			pthread_mutex_lock(&philo->data->death_mutex);
-		died = philo->data->one_dead;
-		pthread_mutex_unlock(&philo->data->death_mutex);
-		if (died)
-			pthread_exit(NULL);
-		printf("Philosopher %d is sleeping\n", philo->id);
-			pthread_mutex_lock(&philo->data->death_mutex);
-		died = philo->data->one_dead;
-		pthread_mutex_unlock(&philo->data->death_mutex);
-		if (died)
-			pthread_exit(NULL);
-		usleep(philo->data->time_to_sleep * 1000);
+		if (is_simulation_over(philo))
+		{
+			pthread_mutex_unlock(philo-> right_fork);
+			pthread_mutex_unlock(philo-> left_fork);
+			pthread_mutex_unlock(&philo->meals_mutex);
+			break ;
+		}
+		philosopher_life_plus(philo);
 	}
 	return (NULL);
 }
-void *monitor(void *info)
+
+void	philosopher_life_plus(t_philosopher *philo)
+{
+	philo->last_meal_time = get_time_in_ms();
+	printf("Philosopher %d is eating\n", philo->id);
+	if (is_simulation_over(philo))
+	{
+		pthread_mutex_unlock(philo-> right_fork);
+		pthread_mutex_unlock(philo-> left_fork);
+		pthread_mutex_unlock(&philo->meals_mutex);
+		return ;
+	}
+	usleep(philo->data->time_to_eat * 1000);
+	if (is_simulation_over(philo))
+	{
+		pthread_mutex_unlock(philo-> right_fork);
+		pthread_mutex_unlock(philo-> left_fork);
+		pthread_mutex_unlock(&philo->meals_mutex);
+		return ;
+	}
+	philo->meals_eaten++;
+	if (is_simulation_over(philo))
+	{
+		pthread_mutex_unlock(philo-> right_fork);
+		pthread_mutex_unlock(philo-> left_fork);
+		pthread_mutex_unlock(&philo->meals_mutex);
+		return ;
+	}
+	pthread_mutex_unlock(philo->right_fork);
+	if (is_simulation_over(philo))
+	{
+		pthread_mutex_unlock(philo-> left_fork);
+		pthread_mutex_unlock(&philo->meals_mutex);
+		return ;
+	}
+	pthread_mutex_unlock(philo->left_fork);
+	if (is_simulation_over(philo))
+	{
+		pthread_mutex_unlock(&philo->meals_mutex);
+		return ;
+	}
+	pthread_mutex_unlock(&philo->meals_mutex);
+	is_simulation_over(philo);
+	printf("Philosopher %d is sleeping\n", philo->id);
+	is_simulation_over(philo);
+	usleep(philo->data->time_to_sleep * 1000);
+}
+void	*monitor(void *info)
 {
 	t_data			*data;
 	int				i;
@@ -89,7 +105,7 @@ void *monitor(void *info)
 				pthread_mutex_lock(&data->print_mutex);
 				printf("Philosopher %d died\n", data->philos[i].id);
 				pthread_mutex_unlock(&data->print_mutex);
-				pthread_mutex_unlock(&data->philos[i].meals_mutex);\
+				pthread_mutex_unlock(&data->philos[i].meals_mutex);
 				pthread_exit(NULL);
 				return (NULL);
 			}
@@ -101,12 +117,14 @@ void *monitor(void *info)
 	return (NULL);
 }
 
-int is_simulation_over(t_data *data)
+int	is_simulation_over(t_philosopher *philo)
 {
-	int res;
+	int		died;
 
-	pthread_mutex_lock(&data->death_mutex);
-	res = data->one_dead;
-	pthread_mutex_unlock(&data->death_mutex);
-	return (res);
+	pthread_mutex_lock(&philo->data->death_mutex);
+	died = philo->data->one_dead;
+	pthread_mutex_unlock(&philo->data->death_mutex);
+	if (died)
+		pthread_exit(NULL);
+	return (died);
 }

@@ -1,6 +1,6 @@
 #include "philosophers.h"
 
-int main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
 	t_data	data;
 
@@ -24,30 +24,32 @@ int main(int argc, char **argv)
 /*creation et envoie a ma structure des differentes 
 valeurs de chaque philosophe*/
 
-void run_simu(t_data *data)
+void	run_simu(t_data *data)
 {
-	int		i;
+	int			i;
 	pthread_t	monitor_thread;
 
 	i = 0;
 	start_simulation(data);
 	if (pthread_create(&monitor_thread, NULL, monitor, data) != 0)
-		return;
+		return ;
 	pthread_join(monitor_thread, NULL);
-	while(i < data->number_of_philosopher)
+	while (i < data->number_of_philosopher)
 	{
 		pthread_join(data->philos[i].thread, NULL);
 		i++;
 	}
 }
+
 void	start_simulation(t_data *data)
 {
-	int i;
-	
+	int	i;
+
 	i = 0;
 	while (i < data-> number_of_philosopher)
 	{
-		if(pthread_create(&data-> philos[i].thread, NULL, philosopher_life, &data->philos[i]))
+		if (pthread_create(&data-> philos[i].thread, NULL, philosopher_life,
+				&data->philos[i]))
 		{
 			printf("failed to create thread for philosopher nmbr: %d\n", i + 1);
 		}
