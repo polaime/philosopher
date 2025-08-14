@@ -19,29 +19,28 @@ int main(int argc, char **argv)
 		data.number_of_times_each_philosopher_must_eat = -1;
 	create_fork(&data);
 	create_philo(&data);
-	run_simu(data);
-	
+	run_simu(&data);
 }
 /*creation et envoie a ma structure des differentes 
 valeurs de chaque philosophe*/
 
-void run_simu(t_data data)
+void run_simu(t_data *data)
 {
 	int		i;
 	pthread_t	monitor_thread;
 
 	i = 0;
-	start_simulation(&data);
-	if (pthread_create(&monitor_thread, NULL, monitor, &data) != 0)
+	start_simulation(data);
+	if (pthread_create(&monitor_thread, NULL, monitor, data) != 0)
 		return;
 	pthread_join(monitor_thread, NULL);
-	while(i < data.number_of_philosopher)
+	while(i < data->number_of_philosopher)
 	{
-		pthread_join(data.philos[i].thread, NULL);
+		pthread_join(data->philos[i].thread, NULL);
 		i++;
 	}
 }
-void start_simulation(t_data *data)
+void	start_simulation(t_data *data)
 {
 	int i;
 	

@@ -1,4 +1,5 @@
-#ifndef PHILOSPHERS_H
+
+#ifndef PHILOSOPHERS_H
 # define PHILOSOPHERS_H
 
 # include <unistd.h>
@@ -10,14 +11,14 @@
 # include <pthread.h>
 
 typedef struct s_philosopher {
-    int             id;                     // numéro du philo
-    int             meals_eaten;            // combien de fois il a mangé
-    pthread_mutex_t *left_fork;             // pointeur vers la fourchette à gauche
-    pthread_mutex_t *right_fork;            // pointeur vers la fourchette à droite
-    long long       last_meal_time;         // son dernier repas
-	pthread_mutex_t meals_mutex;
-    struct s_data   *data;
-	pthread_t thread;
+	int					id;
+	int					meals_eaten;
+	pthread_mutex_t		*left_fork;
+	pthread_mutex_t		*right_fork;
+	long long		last_meal_time;
+	pthread_mutex_t	meals_mutex;
+	struct s_data	*data;
+	pthread_t		thread;
 } t_philosopher;
 
 typedef struct s_data {
@@ -42,7 +43,7 @@ typedef struct s_data {
 //main.c
 	int main(int argc, char **argv);
 	void start_simulation(t_data *data);
-	void run_simu(t_data data);
+	void run_simu(t_data *data);
 
 //utils.c
 long long	get_time_in_ms(void);
