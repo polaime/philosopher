@@ -51,6 +51,7 @@ void	run_simu(t_data *data);
 //utils.c
 long long	get_time_in_ms(void);
 int		ft_atoi(const char *str);
+void	print_log(t_philosopher *philo, char *message);
 //philosopher.c
 void	*philosopher_life(void *info);
 void	philosopher_life_plus(t_philosopher *philo);

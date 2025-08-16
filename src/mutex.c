@@ -17,6 +17,7 @@ void	create_fork(t_data *data)
 /*initialisations des fourchettes(mutex) et retour de celle ci*/
 // void destroy_all(t_data *data)
 // {}
+
 void	create_philo(t_data *data)
 {
 	int		i;
