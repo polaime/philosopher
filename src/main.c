@@ -19,7 +19,9 @@ int	main(int argc, char **argv)
 		data.number_of_times_each_philosopher_must_eat = -1;
 	create_fork(&data);
 	create_philo(&data);
+	one_philo_exist(&data);
 	run_simu(&data);
+	destroy_all(&data);
 }
 /*creation et envoie a ma structure des differentes 
 valeurs de chaque philosophe*/
@@ -54,5 +56,18 @@ void	start_simulation(t_data *data)
 			printf("failed to create thread for philosopher nmbr: %d\n", i + 1);
 		}
 		i++;
+	}
+}
+void one_philo_exist(t_data *data)
+{
+	if (data->number_of_philosopher == 1)
+	{
+		print_log(&data->philos[0], "has taken a fork");
+		usleep(data->time_to_die * 1000);
+		pthread_mutex_lock(&data->death_mutex);
+		data->one_dead = 1;
+		pthread_mutex_unlock(&data->death_mutex);
+		print_log(&data->philos[0], "is dead");
+		return ;
 	}
 }

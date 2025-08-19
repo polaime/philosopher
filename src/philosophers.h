@@ -1,4 +1,3 @@
-
 #ifndef PHILOSOPHERS_H
 # define PHILOSOPHERS_H
 
@@ -10,7 +9,8 @@
 # include <string.h>
 # include <pthread.h>
 
-typedef struct s_philosopher {
+typedef struct s_philosopher
+{
 	int					id;
 	int					meals_eaten;
 	pthread_mutex_t		*left_fork;
@@ -21,7 +21,8 @@ typedef struct s_philosopher {
 	pthread_t			thread;
 }	t_philosopher;
 
-typedef struct s_data {
+typedef struct s_data
+{
 	int				number_of_times_each_philosopher_must_eat;
 	int				number_of_philosopher;
 	int				time_to_die;
@@ -36,26 +37,29 @@ typedef struct s_data {
 	pthread_mutex_t	death_mutex;
 }	t_data;
 
-
 //mutex.c
-void	create_fork(t_data *data);
-void	create_philo(t_data *data);
-void	destroy_all(t_data *data);
-void	create_philo_plus(t_data *data, int i);
+void		create_fork(t_data *data);
+void		create_philo(t_data *data);
+void		destroy_all(t_data *data);
+void		create_philo_plus(t_data *data, int i);
 
 //main.c
-int		main(int argc, char **argv);
-void	start_simulation(t_data *data);
-void	run_simu(t_data *data);
+int			main(int argc, char **argv);
+void		start_simulation(t_data *data);
+void		run_simu(t_data *data);
+void 	one_philo_exist(t_data *data);
+
 
 //utils.c
 long long	get_time_in_ms(void);
-int		ft_atoi(const char *str);
-void	print_log(t_philosopher *philo, char *message);
-//philosopher.c
-void	*philosopher_life(void *info);
-void	philosopher_life_plus(t_philosopher *philo);
-void	*monitor(void *info);
-int		is_simulation_over(t_philosopher *philo);
+int			ft_atoi(const char *str);
+void		print_log(t_philosopher *philo, char *message);
+void		print_log_dead(t_philosopher *philo, char *message);
 
+//philosopher.c
+void		*philosopher_life(void *info);
+void		philosopher_life_plus(t_philosopher *philo);
+void		*monitor(void *info);
+int			is_simulation_over(t_philosopher *philo);
+int			routine_monitor(t_data *data, int i, long long int now);
 #endif

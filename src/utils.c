@@ -42,9 +42,37 @@ void	print_log(t_philosopher *philo, char *message)
 
 	if (is_simulation_over(philo))
 		return ;
-	timestamp = get_time_in_ms() - philo->data->start_time;
 	pthread_mutex_lock(&philo->data->print_mutex);
 	if (!is_simulation_over(philo))
+	{
+		timestamp = get_time_in_ms() - philo->data->start_time;
 		printf("%lld Philosopher %d %s\n", timestamp, philo->id, message);
+	}
 	pthread_mutex_unlock(&philo->data->print_mutex);
+}
+
+void	print_log_dead(t_philosopher *philo, char *message)
+{
+	long long	timestamp;
+
+	timestamp = get_time_in_ms() - philo->data->start_time;
+	printf("%lld Philosopher %d %s\n", timestamp, philo->id, message);
+}
+
+void	destroy_all(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->number_of_philosopher)
+	{
+		pthread_mutex_destroy(data->philos[i].left_fork);
+		pthread_mutex_destroy(&data->philos[i].meals_mutex);
+		pthread_mutex_destroy(&data->forks[i]);
+		i++;
+	}
+	free(data -> forks);
+	pthread_mutex_destroy(&data->death_mutex);
+	pthread_mutex_destroy(&data->print_mutex);
+	free(data->philos);
 }
