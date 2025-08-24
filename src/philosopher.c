@@ -5,7 +5,7 @@ void	*philosopher_life(void *info)
 	t_philosopher	*philo;
 
 	philo = (t_philosopher *)info;
-	while (!is_simulation_over(philo) || philo-> )
+	while (!is_simulation_over(philo))
 	{
 		print_log(philo, "is thinking");
 		pthread_mutex_lock(philo->left_fork);
@@ -77,6 +77,9 @@ int	is_simulation_over(t_philosopher *philo)
 {
 	int		died;
 
+	if (philo -> meals_eaten >= philo -> data
+		->number_of_times_each_philosopher_must_eat)
+		return (1);
 	pthread_mutex_lock(&philo->data->death_mutex);
 	died = philo->data->one_dead;
 	pthread_mutex_unlock(&philo->data->death_mutex);
@@ -85,6 +88,12 @@ int	is_simulation_over(t_philosopher *philo)
 
 int	routine_monitor(t_data *data, int i, long long int now)
 {
+	if (data->number_of_times_each_philosopher_must_eat > data
+		-> philos ->meals_eaten)
+	{
+		pthread_mutex_unlock(&data->philos[i].meals_mutex);
+		return (0);
+	}
 	if (now - data->philos[i].last_meal_time > data->time_to_die)
 	{
 		pthread_mutex_lock(&data->death_mutex);

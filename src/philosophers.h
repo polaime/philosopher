@@ -47,8 +47,8 @@ void		create_philo_plus(t_data *data, int i);
 int			main(int argc, char **argv);
 void		start_simulation(t_data *data);
 void		run_simu(t_data *data);
-void 	one_philo_exist(t_data *data);
-
+void		one_philo_exist(t_data *data);
+int			argv_is_a_number(char **argv, int argc);
 
 //utils.c
 long long	get_time_in_ms(void);

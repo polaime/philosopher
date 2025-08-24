@@ -4,9 +4,10 @@ int	main(int argc, char **argv)
 {
 	t_data	data;
 
-	if (argc != 5 && argc != 6)
+	if ((argc != 5 && argc != 6) || argv_is_a_number(argv, argc))
 	{
-		printf("Usage: ./philo number_of_philos time_to_die time_to_eat time_to_sleep [number_of_times_each_philo_must_eat]\n");
+		printf("Usage: ./philo number_of_philos time_to_die time_to_eat");
+		printf(" time_to_sleep[number_of_times_each_philo_must_eat]\n");
 		return (1);
 	}
 	data.number_of_philosopher = ft_atoi(argv[1]);
@@ -58,7 +59,8 @@ void	start_simulation(t_data *data)
 		i++;
 	}
 }
-void one_philo_exist(t_data *data)
+
+void	one_philo_exist(t_data *data)
 {
 	if (data->number_of_philosopher == 1)
 	{
@@ -70,4 +72,25 @@ void one_philo_exist(t_data *data)
 		print_log(&data->philos[0], "is dead");
 		return ;
 	}
+}
+
+int	argv_is_a_number(char **argv, int argc)
+{
+	int		i;
+	int		j;
+
+	i = 1;
+	while (i < argc)
+	{
+		j = 0;
+		while (argv[i][j] != '\0')
+		{
+			if (argv[i][j] > 47 && argv[i][j] < 58)
+				j++;
+			else
+				return (1);
+		}
+		i++;
+	}
+	return (0);
 }
